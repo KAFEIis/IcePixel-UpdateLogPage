@@ -370,13 +370,9 @@
             // 设置过滤器按钮事件
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // 移除其他按钮的active类
                     filterButtons.forEach(btn => btn.classList.remove('active'));
-                    // 为当前按钮添加active类
                     this.classList.add('active');
-                    // 设置当前过滤器
                     activeFilter = this.getAttribute('data-filter');
-                    // 根据过滤器显示更新
                     displayUpdates(allUpdates, activeFilter);
                 });
             });
@@ -389,15 +385,28 @@
                 showLoading();
                 
                 try {
-                    // 尝试从 update.txt 文件获取数据
-                    const response = await fetch('update.txt');
+                    // 添加时间戳防止缓存
+                    const timestamp = new Date().getTime();
+                    const response = await fetch(`update.txt?t=${timestamp}`);
                     
                     if (!response.ok) {
-                        throw new Error(`文件加载失败: ${response.status}`);
+                        throw new Error(`文件加载失败: ${response.status} ${response.statusText}`);
                     }
                     
                     const text = await response.text();
-                    allUpdates = parseUpdateText(text);
+                    
+                    if (!text || text.trim().length === 0) {
+                        throw new Error('update.txt 文件为空');
+                    }
+                    
+                    console.log('获取到的update.txt内容:', text);
+                    
+                    // 直接解析您的update.txt格式
+                    allUpdates = parseYourFormat(text);
+                    
+                    if (allUpdates.length === 0) {
+                        throw new Error('未能解析任何更新记录');
+                    }
                     
                     // 显示所有更新
                     displayUpdates(allUpdates, activeFilter);
@@ -408,32 +417,26 @@
                     
                 } catch (error) {
                     console.error('加载更新日志时出错:', error);
-                    showError('无法加载更新日志文件。将显示示例数据。');
+                    showError(`无法加载更新日志文件: ${error.message}<br><br>请确认 update.txt 文件是否存在，并且格式正确。`);
                     
-                    // 如果无法加载文件，显示示例数据
-                    allUpdates = getSampleData();
-                    displayUpdates(allUpdates, activeFilter);
-                    
-                    // 更新最后更新时间
+                    // 只更新最后更新时间，不显示示例数据
                     const now = new Date();
-                    lastUpdated.textContent = formatDate(now) + ' (示例数据)';
+                    lastUpdated.textContent = formatDate(now);
                 }
             }
             
-            // 解析更新文本
-            function parseUpdateText(text) {
+            // 专门解析您的格式：v26.2.1 - 2026-2-5
+            function parseYourFormat(text) {
                 const updates = [];
-                const lines = text.split('\n');
+                const lines = text.trim().split('\n');
                 let currentUpdate = null;
                 
-                for (let line of lines) {
-                    line = line.trim();
-                    
-                    // 跳过空行
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
                     if (!line) continue;
                     
-                    // 检测版本标题行 (例如: "v1.2.0 - 2023-10-15")
-                    const versionMatch = line.match(/^(v?\d+\.\d+\.\d+|[^:]+)\s*[-\u2013:]\s*(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/i);
+                    // 检测版本行：如 "v26.2.1 - 2026-2-5"
+                    const versionMatch = line.match(/^([^\s\-]+)\s*[-\u2013]\s*(.+)$/);
                     
                     if (versionMatch) {
                         // 如果有前一个更新，先保存
@@ -441,40 +444,47 @@
                             updates.push(currentUpdate);
                         }
                         
-                        // 创建新的更新对象
+                        const version = versionMatch[1].trim();
+                        const dateStr = versionMatch[2].trim();
+                        
                         currentUpdate = {
-                            version: versionMatch[1].trim(),
-                            date: versionMatch[2].trim(),
+                            version: version,
+                            date: normalizeDate(dateStr),
                             content: '',
                             tags: []
                         };
                         
-                        // 检查标签
-                        if (line.toLowerCase().includes('feature') || line.toLowerCase().includes('新功能')) {
-                            currentUpdate.tags.push('feature');
-                        }
-                        if (line.toLowerCase().includes('fix') || line.toLowerCase().includes('修复')) {
-                            currentUpdate.tags.push('fix');
-                        }
-                        if (line.toLowerCase().includes('enhancement') || line.toLowerCase().includes('优化')) {
-                            currentUpdate.tags.push('enhancement');
-                        }
-                    } 
-                    // 检测标签行
-                    else if (line.startsWith('[feature]') || line.startsWith('[fix]') || line.startsWith('[enhancement]')) {
-                        const tagMatch = line.match(/^\[(\w+)\]/);
-                        if (tagMatch && currentUpdate) {
-                            currentUpdate.tags.push(tagMatch[1]);
-                            // 移除标签部分，只保留内容
-                            line = line.replace(/^\[\w+\]\s*/, '');
-                        }
-                    }
-                    // 如果是内容行，添加到当前更新
-                    else if (currentUpdate) {
-                        if (currentUpdate.content) {
-                            currentUpdate.content += '\n' + line;
-                        } else {
-                            currentUpdate.content = line;
+                        console.log('找到版本:', version, '日期:', dateStr);
+                    } else if (currentUpdate) {
+                        // 如果是内容行
+                        if (line) {
+                            // 检测标签，如 [fix] 或 [enhancement]
+                            const tagMatch = line.match(/^\[(\w+)\](.*)$/);
+                            if (tagMatch) {
+                                const tag = tagMatch[1];
+                                const content = tagMatch[2].trim();
+                                
+                                currentUpdate.tags.push(tag);
+                                if (content) {
+                                    currentUpdate.content += (currentUpdate.content ? '\n• ' : '• ') + content;
+                                }
+                            } else {
+                                // 没有标签的行
+                                currentUpdate.content += (currentUpdate.content ? '\n• ' : '• ') + line;
+                                
+                                // 根据内容推断标签
+                                const lowerLine = line.toLowerCase();
+                                if (lowerLine.includes('修复') || lowerLine.includes('fix') || lowerLine.includes('bug')) {
+                                    if (!currentUpdate.tags.includes('fix')) {
+                                        currentUpdate.tags.push('fix');
+                                    }
+                                }
+                                if (lowerLine.includes('优化') || lowerLine.includes('改进') || lowerLine.includes('enhancement')) {
+                                    if (!currentUpdate.tags.includes('enhancement')) {
+                                        currentUpdate.tags.push('enhancement');
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -484,55 +494,30 @@
                     updates.push(currentUpdate);
                 }
                 
-                // 如果没有找到任何更新，使用默认解析
-                if (updates.length === 0) {
-                    return parseSimpleFormat(text);
-                }
-                
+                console.log('解析结果:', updates);
                 return updates;
             }
             
-            // 简单格式解析（备用）
-            function parseSimpleFormat(text) {
-                const updates = [];
-                const sections = text.split(/\n(?=\s*(?:v?\d+\.\d+\.\d+|\d{4}[-\/]\d{1,2}[-\/]\d{1,2}))/i);
-                
-                for (let section of sections) {
-                    section = section.trim();
-                    if (!section) continue;
+            // 标准化日期格式：2026-2-5 -> 2026-02-05
+            function normalizeDate(dateStr) {
+                try {
+                    // 移除日期中的空格
+                    let cleanDate = dateStr.replace(/\s+/g, '');
                     
-                    const lines = section.split('\n');
-                    const firstLine = lines[0].trim();
-                    
-                    // 尝试提取版本和日期
-                    const versionMatch = firstLine.match(/(v?\d+\.\d+\.\d+|[^:]+)/i);
-                    const dateMatch = firstLine.match(/(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/);
-                    
-                    if (versionMatch) {
-                        const update = {
-                            version: versionMatch[0].trim(),
-                            date: dateMatch ? dateMatch[0].trim() : '未指定日期',
-                            content: lines.slice(1).join('\n').trim(),
-                            tags: []
-                        };
-                        
-                        // 根据内容推断标签
-                        const content = update.content.toLowerCase();
-                        if (content.includes('新增') || content.includes('添加') || content.includes('feature')) {
-                            update.tags.push('feature');
-                        }
-                        if (content.includes('修复') || content.includes('fix') || content.includes('bug')) {
-                            update.tags.push('fix');
-                        }
-                        if (content.includes('优化') || content.includes('改进') || content.includes('enhancement')) {
-                            update.tags.push('enhancement');
-                        }
-                        
-                        updates.push(update);
+                    // 处理 2026-2-5 这种格式
+                    const match = cleanDate.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+                    if (match) {
+                        const year = match[1];
+                        const month = match[2].padStart(2, '0');
+                        const day = match[3].padStart(2, '0');
+                        return `${year}-${month}-${day}`;
                     }
+                } catch (e) {
+                    console.error('日期格式化错误:', e);
                 }
                 
-                return updates;
+                // 如果无法处理，返回原始日期
+                return dateStr;
             }
             
             // 显示更新
@@ -567,18 +552,8 @@
                         `<span class="update-tag tag-${tag}">${getTagLabel(tag)}</span>`
                     ).join('');
                     
-                    // 处理内容，支持简单的markdown格式
-                    let contentHtml = update.content
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                        .replace(/`(.*?)`/g, '<code>$1</code>')
-                        .replace(/\n- (.*?)(?=\n|$)/g, '\n<li>$1</li>')
-                        .replace(/\n\d+\. (.*?)(?=\n|$)/g, '\n<li>$1</li>');
-                    
-                    // 将列表项包装在ul标签中
-                    if (contentHtml.includes('<li>')) {
-                        contentHtml = contentHtml.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-                    }
+                    // 处理内容
+                    let contentHtml = update.content || '暂无详细说明';
                     
                     // 将换行符转换为br标签
                     contentHtml = contentHtml.replace(/\n/g, '<br>');
@@ -614,6 +589,10 @@
                         <i class="fas fa-exclamation-triangle"></i>
                         <h3>加载失败</h3>
                         <p>${message}</p>
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                            您的 update.txt 格式应该为：<br>
+                            <code>v1.0.0 - 2023-01-01<br>[feature] 新增功能描述<br>[fix] 修复问题描述</code>
+                        </p>
                     </div>
                 `;
             }
@@ -628,14 +607,29 @@
                 return labels[tag] || tag;
             }
             
-            // 格式化日期
+            // 格式化日期显示：2026-02-05 -> 2026年2月5日
             function formatDate(dateString) {
                 if (!dateString) return '未指定日期';
                 
                 try {
-                    // 尝试解析日期
+                    // 处理标准日期格式
                     const date = new Date(dateString);
                     if (isNaN(date.getTime())) {
+                        // 尝试处理 2026-2-5 格式
+                        const parts = dateString.split(/[-\/]/);
+                        if (parts.length === 3) {
+                            const year = parseInt(parts[0]);
+                            const month = parseInt(parts[1]) - 1;
+                            const day = parseInt(parts[2]);
+                            const dateObj = new Date(year, month, day);
+                            if (!isNaN(dateObj.getTime())) {
+                                return dateObj.toLocaleDateString('zh-CN', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                });
+                            }
+                        }
                         return dateString;
                     }
                     
@@ -647,42 +641,6 @@
                 } catch (e) {
                     return dateString;
                 }
-            }
-            
-            // 示例数据（当无法加载update.txt时使用）
-            function getSampleData() {
-                return [
-                    {
-                        version: "v1.2.0",
-                        date: "2023-10-15",
-                        content: "新增暗色模式支持，用户现在可以在设置中切换主题。\n- 优化了移动端界面响应速度\n- 修复了登录页面的一些样式问题",
-                        tags: ["feature", "enhancement", "fix"]
-                    },
-                    {
-                        version: "v1.1.3",
-                        date: "2023-09-28",
-                        content: "修复了数据导出功能中的编码问题，现在支持更多文件格式。\n- 解决了iOS设备上的滚动问题\n- 更新了依赖库版本",
-                        tags: ["fix", "enhancement"]
-                    },
-                    {
-                        version: "v1.1.0",
-                        date: "2023-08-10",
-                        content: "添加了数据导出功能，用户现在可以将数据导出为CSV和JSON格式。\n- 新增了数据可视化图表\n- 改进了搜索算法，提升搜索速度30%",
-                        tags: ["feature", "enhancement"]
-                    },
-                    {
-                        version: "v1.0.2",
-                        date: "2023-07-05",
-                        content: "修复了用户注册时邮箱验证失败的问题。\n- 解决了时区显示不准确的问题\n- 优化了数据库查询性能",
-                        tags: ["fix", "enhancement"]
-                    },
-                    {
-                        version: "v1.0.0",
-                        date: "2023-06-12",
-                        content: "项目正式发布首个版本。包含核心功能：\n- 用户注册与登录系统\n- 数据管理面板\n- 基本的报表生成功能\n- 响应式设计，支持移动端",
-                        tags: ["feature"]
-                    }
-                ];
             }
         });
     </script>

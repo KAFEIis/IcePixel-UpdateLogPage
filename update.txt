@@ -3,12 +3,12 @@ v26.2.1 - 2026-02-05
 - 优化了移动端表单界面响应速度
 
 v26.1.6 - 2026-01-25
-[enhancement] Support for NetEase 1.21.50
-[enhancement] Support for 1.21.132.1
-[feature] add temporary invincibility period upon player respawn
-[fix] remove team display prefix and suffix
-[feature] add bedwars experience mode
-[feature] support displaying NetEase mobile player skins
-[fix] resolve null value for player coins
-[fix] deprecate compatibility updates for Bedrock edition below v1.10
-[enhancement] update server resource pack
+Support for NetEase 1.21.50
+Support for 1.21.132.1
+add temporary invincibility period upon player respawn
+remove team display prefix and suffix
+add bedwars experience mode
+support displaying NetEase mobile player skins
+resolve null value for player coins
+deprecate compatibility updates for Bedrock edition below v1.10
+update server resource pack

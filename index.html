@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目更新日志</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --text-color: #333;
+            --light-bg: #f9f9f9;
+            --border-color: #eaeaea;
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--secondary-color);
+        }
+        
+        .filter-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .refresh-btn {
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background-color: #16a085;
+            transform: translateY(-2px);
+        }
+        
+        .changelog-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        .changelog-header {
+            padding: 25px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .changelog-header h2 {
+            font-weight: 400;
+            font-size: 1.5rem;
+        }
+        
+        .update-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .changelog-list {
+            padding: 10px;
+        }
+        
+        .update-item {
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        
+        .update-item:hover {
+            background-color: rgba(52, 152, 219, 0.03);
+        }
+        
+        .update-item:last-child {
+            border-bottom: none;
+        }
+        
+        .update-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .update-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .update-date {
+            background-color: #f0f7ff;
+            color: var(--secondary-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .update-content {
+            color: #555;
+            line-height: 1.7;
+        }
+        
+        .update-content ul, .update-content ol {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .update-content li {
+            margin-bottom: 8px;
+        }
+        
+        .update-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-top: 10px;
+        }
+        
+        .tag-feature {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #2980b9;
+        }
+        
+        .tag-fix {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+        }
+        
+        .tag-enhancement {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--secondary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .update-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .update-date {
+                align-self: flex-start;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 30px 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .changelog-header, .update-item {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>项目更新日志</h1>
+            <p class="subtitle">记录项目的所有版本更新、功能添加和问题修复。日志内容从 update.txt 文件自动加载。</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="controls">
+                <div class="filter-options">
+                    <button class="filter-btn active" data-filter="all">全部更新</button>
+                    <button class="filter-btn" data-filter="feature">新功能</button>
+                    <button class="filter-btn" data-filter="fix">问题修复</button>
+                    <button class="filter-btn" data-filter="enhancement">功能优化</button>
+                </div>
+                
+                <button class="refresh-btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> 刷新日志
+                </button>
+            </div>
+            
+            <div class="changelog-container">
+                <div class="changelog-header">
+                    <h2>更新历史</h2>
+                    <div class="update-count">共 <span id="updateCount">0</span> 条更新</div>
+                </div>
+                
+                <div class="changelog-list" id="changelogList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>更新日志自动从 update.txt 文件加载 • 最后更新: <span id="lastUpdated">-</span></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const changelogList = document.getElementById('changelogList');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const updateCount = document.getElementById('updateCount');
+            const lastUpdated = document.getElementById('lastUpdated');
+            
+            let allUpdates = [];
+            let activeFilter = 'all';
+            
+            // 初始化
+            loadChangelog();
+            
+            // 设置过滤器按钮事件
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除其他按钮的active类
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // 为当前按钮添加active类
+                    this.classList.add('active');
+                    // 设置当前过滤器
+                    activeFilter = this.getAttribute('data-filter');
+                    // 根据过滤器显示更新
+                    displayUpdates(allUpdates, activeFilter);
+                });
+            });
+            
+            // 刷新按钮事件
+            refreshBtn.addEventListener('click', loadChangelog);
+            
+            // 加载更新日志
+            async function loadChangelog() {
+                showLoading();
+                
+                try {
+                    // 尝试从 update.txt 文件获取数据
+                    const response = await fetch('update.txt');
+                    
+                    if (!response.ok) {
+                        throw new Error(`文件加载失败: ${response.status}`);
+                    }
+                    
+                    const text = await response.text();
+                    allUpdates = parseUpdateText(text);
+                    
+                    // 显示所有更新
+                    displayUpdates(allUpdates, activeFilter);
+                    
+                    // 更新最后更新时间
+                    const now = new Date();
+                    lastUpdated.textContent = formatDate(now);
+                    
+                } catch (error) {
+                    console.error('加载更新日志时出错:', error);
+                    showError('无法加载更新日志文件。将显示示例数据。');
+                    
+                    // 如果无法加载文件，显示示例数据
+                    allUpdates = getSampleData();
+                    displayUpdates(allUpdates, activeFilter);
+                    
+                    // 更新最后更新时间
+                    const now = new Date();
+                    lastUpdated.textContent = formatDate(now) + ' (示例数据)';
+                }
+            }
+            
+            // 解析更新文本
+            function parseUpdateText(text) {
+                const updates = [];
+                const lines = text.split('\n');
+                let currentUpdate = null;
+                
+                for (let line of lines) {
+                    line = line.trim();
+                    
+                    // 跳过空行
+                    if (!line) continue;
+                    
+                    // 检测版本标题行 (例如: "v1.2.0 - 2023-10-15")
+                    const versionMatch = line.match(/^(v?\d+\.\d+\.\d+|[^:]+)\s*[-\u2013:]\s*(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/i);
+                    
+                    if (versionMatch) {
+                        // 如果有前一个更新，先保存
+                        if (currentUpdate) {
+                            updates.push(currentUpdate);
+                        }
+                        
+                        // 创建新的更新对象
+                        currentUpdate = {
+                            version: versionMatch[1].trim(),
+                            date: versionMatch[2].trim(),
+                            content: '',
+                            tags: []
+                        };
+                        
+                        // 检查标签
+                        if (line.toLowerCase().includes('feature') || line.toLowerCase().includes('新功能')) {
+                            currentUpdate.tags.push('feature');
+                        }
+                        if (line.toLowerCase().includes('fix') || line.toLowerCase().includes('修复')) {
+                            currentUpdate.tags.push('fix');
+                        }
+                        if (line.toLowerCase().includes('enhancement') || line.toLowerCase().includes('优化')) {
+                            currentUpdate.tags.push('enhancement');
+                        }
+                    } 
+                    // 检测标签行
+                    else if (line.startsWith('[feature]') || line.startsWith('[fix]') || line.startsWith('[enhancement]')) {
+                        const tagMatch = line.match(/^\[(\w+)\]/);
+                        if (tagMatch && currentUpdate) {
+                            currentUpdate.tags.push(tagMatch[1]);
+                            // 移除标签部分，只保留内容
+                            line = line.replace(/^\[\w+\]\s*/, '');
+                        }
+                    }
+                    // 如果是内容行，添加到当前更新
+                    else if (currentUpdate) {
+                        if (currentUpdate.content) {
+                            currentUpdate.content += '\n' + line;
+                        } else {
+                            currentUpdate.content = line;
+                        }
+                    }
+                }
+                
+                // 添加最后一个更新
+                if (currentUpdate) {
+                    updates.push(currentUpdate);
+                }
+                
+                // 如果没有找到任何更新，使用默认解析
+                if (updates.length === 0) {
+                    return parseSimpleFormat(text);
+                }
+                
+                return updates;
+            }
+            
+            // 简单格式解析（备用）
+            function parseSimpleFormat(text) {
+                const updates = [];
+                const sections = text.split(/\n(?=\s*(?:v?\d+\.\d+\.\d+|\d{4}[-\/]\d{1,2}[-\/]\d{1,2}))/i);
+                
+                for (let section of sections) {
+                    section = section.trim();
+                    if (!section) continue;
+                    
+                    const lines = section.split('\n');
+                    const firstLine = lines[0].trim();
+                    
+                    // 尝试提取版本和日期
+                    const versionMatch = firstLine.match(/(v?\d+\.\d+\.\d+|[^:]+)/i);
+                    const dateMatch = firstLine.match(/(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})/);
+                    
+                    if (versionMatch) {
+                        const update = {
+                            version: versionMatch[0].trim(),
+                            date: dateMatch ? dateMatch[0].trim() : '未指定日期',
+                            content: lines.slice(1).join('\n').trim(),
+                            tags: []
+                        };
+                        
+                        // 根据内容推断标签
+                        const content = update.content.toLowerCase();
+                        if (content.includes('新增') || content.includes('添加') || content.includes('feature')) {
+                            update.tags.push('feature');
+                        }
+                        if (content.includes('修复') || content.includes('fix') || content.includes('bug')) {
+                            update.tags.push('fix');
+                        }
+                        if (content.includes('优化') || content.includes('改进') || content.includes('enhancement')) {
+                            update.tags.push('enhancement');
+                        }
+                        
+                        updates.push(update);
+                    }
+                }
+                
+                return updates;
+            }
+            
+            // 显示更新
+            function displayUpdates(updates, filter) {
+                // 过滤更新
+                let filteredUpdates = updates;
+                if (filter !== 'all') {
+                    filteredUpdates = updates.filter(update => 
+                        update.tags.includes(filter)
+                    );
+                }
+                
+                // 更新计数
+                updateCount.textContent = filteredUpdates.length;
+                
+                // 如果没有更新
+                if (filteredUpdates.length === 0) {
+                    changelogList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h3>暂无更新日志</h3>
+                            <p>没有找到${filter === 'all' ? '' : '符合筛选条件的'}更新记录</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 生成HTML
+                let html = '';
+                filteredUpdates.forEach(update => {
+                    const tagsHtml = update.tags.map(tag => 
+                        `<span class="update-tag tag-${tag}">${getTagLabel(tag)}</span>`
+                    ).join('');
+                    
+                    // 处理内容，支持简单的markdown格式
+                    let contentHtml = update.content
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/`(.*?)`/g, '<code>$1</code>')
+                        .replace(/\n- (.*?)(?=\n|$)/g, '\n<li>$1</li>')
+                        .replace(/\n\d+\. (.*?)(?=\n|$)/g, '\n<li>$1</li>');
+                    
+                    // 将列表项包装在ul标签中
+                    if (contentHtml.includes('<li>')) {
+                        contentHtml = contentHtml.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+                    }
+                    
+                    // 将换行符转换为br标签
+                    contentHtml = contentHtml.replace(/\n/g, '<br>');
+                    
+                    html += `
+                        <div class="update-item">
+                            <div class="update-header">
+                                <div class="update-title">${update.version}</div>
+                                <div class="update-date">${formatDate(update.date)}</div>
+                            </div>
+                            <div class="update-content">${contentHtml}</div>
+                            ${tagsHtml ? `<div>${tagsHtml}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                changelogList.innerHTML = html;
+            }
+            
+            // 显示加载状态
+            function showLoading() {
+                changelogList.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                `;
+            }
+            
+            // 显示错误状态
+            function showError(message) {
+                changelogList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>加载失败</h3>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+            
+            // 获取标签的显示文本
+            function getTagLabel(tag) {
+                const labels = {
+                    'feature': '新功能',
+                    'fix': '问题修复',
+                    'enhancement': '功能优化'
+                };
+                return labels[tag] || tag;
+            }
+            
+            // 格式化日期
+            function formatDate(dateString) {
+                if (!dateString) return '未指定日期';
+                
+                try {
+                    // 尝试解析日期
+                    const date = new Date(dateString);
+                    if (isNaN(date.getTime())) {
+                        return dateString;
+                    }
+                    
+                    return date.toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                } catch (e) {
+                    return dateString;
+                }
+            }
+            
+            // 示例数据（当无法加载update.txt时使用）
+            function getSampleData() {
+                return [
+                    {
+                        version: "v1.2.0",
+                        date: "2023-10-15",
+                        content: "新增暗色模式支持，用户现在可以在设置中切换主题。\n- 优化了移动端界面响应速度\n- 修复了登录页面的一些样式问题",
+                        tags: ["feature", "enhancement", "fix"]
+                    },
+                    {
+                        version: "v1.1.3",
+                        date: "2023-09-28",
+                        content: "修复了数据导出功能中的编码问题，现在支持更多文件格式。\n- 解决了iOS设备上的滚动问题\n- 更新了依赖库版本",
+                        tags: ["fix", "enhancement"]
+                    },
+                    {
+                        version: "v1.1.0",
+                        date: "2023-08-10",
+                        content: "添加了数据导出功能，用户现在可以将数据导出为CSV和JSON格式。\n- 新增了数据可视化图表\n- 改进了搜索算法，提升搜索速度30%",
+                        tags: ["feature", "enhancement"]
+                    },
+                    {
+                        version: "v1.0.2",
+                        date: "2023-07-05",
+                        content: "修复了用户注册时邮箱验证失败的问题。\n- 解决了时区显示不准确的问题\n- 优化了数据库查询性能",
+                        tags: ["fix", "enhancement"]
+                    },
+                    {
+                        version: "v1.0.0",
+                        date: "2023-06-12",
+                        content: "项目正式发布首个版本。包含核心功能：\n- 用户注册与登录系统\n- 数据管理面板\n- 基本的报表生成功能\n- 响应式设计，支持移动端",
+                        tags: ["feature"]
+                    }
+                ];
+            }
+        });
+    </script>
+</body>
+</html>

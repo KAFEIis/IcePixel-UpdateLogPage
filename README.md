@@ -1,3 +1,4 @@
+# IcePixel-UpdateLogPage
 **🤔 什么是 IcePixel-UpdateLogPage?**
 
 🥳 这是IcePixel服务器更新日志页面的 Github 仓库页面，基于 **HTML5、CSS 和 JavaScript** 语言开发，可参考使用，但因为是初步使用此语言开发，难免会有问题，大家可以前往项目 **Issuse** 处指出哦!

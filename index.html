@@ -3,37 +3,639 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IcePixel服务器更新日志</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>IcePi 更新日志</title>
     <style>
+        @font-face {
+            font-family: 'Minecraft Ten';
+            src: url("/IcePixel-UpdateLogPage/fonts/Minecraft-Ten.otf") format('opentype');
+        }
+        @font-face {
+            font-family: 'Minecraft Five';
+            src: url("/IcePixel-UpdateLogPage/fonts/Minecraft-Five.otf") format('opentype');
+        }
+        @font-face {
+            font-family: 'Minecraft Five Bold';
+            src: url("/IcePixel-UpdateLogPage/fonts/Minecraft-Five-Bold.otf") format('opentype');
+        }
+        @font-face {
+            font-family: 'NotoSans Bold';
+            src: url("/IcePixel-UpdateLogPage/fonts/NotoSans-Bold.ttf") format('truetype');
+        }
+        @font-face {
+            font-family: 'NotoSans';
+            src: url("/IcePixel-UpdateLogPage/fonts/NotoSans-Regular.ttf") format('truetype');
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-        }
-        
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #1abc9c;
-            --text-color: #333;
-            --light-bg: #f9f9f9;
-            --border-color: #eaeaea;
-            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            image-rendering: pixelated;
         }
         
         body {
-            background-color: #f5f7fa;
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            background-color: #0f0f0f;
+            background-image: 
+                linear-gradient(rgba(20, 20, 20, 0.9) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(20, 20, 20, 0.9) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: -1px -1px;
+            color: #e0e0e0;
+            font-family: 'Minecraft Five', 'NotoSans', sans-serif;
+            line-height: 1.4;
+            padding: 8px;
+            min-height: 100vh;
         }
         
-        .container {
+        .ore-container {
+            background-color: #1a1a1a;
+            border: 3px solid #3a3a3a;
+            padding: 0;
+            margin: 0 auto 16px;
+            max-width: 1200px;
+            box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #555;
+        }
+        
+        .ore-header {
+            background-color: #2a2a2a;
+            border-bottom: 3px solid #3a3a3a;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: inset 0 0 0 1px #444;
+        }
+        
+        .ore-title {
+            color: #4aa0f5;
+            font-size: 32px;
+            font-family: 'Minecraft Ten', 'NotoSans Bold', sans-serif;
+            text-shadow: 2px 2px 0 #000, 1px 1px 0 #000;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .ore-subtitle {
+            color: #9a9a9a;
+            font-size: 16px;
+            font-family: 'Minecraft Five', 'NotoSans', sans-serif;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .ore-controls {
+            background-color: #222;
+            border-bottom: 3px solid #3a3a3a;
+            padding: 12px 20px;
             display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            box-shadow: inset 0 0 0 1px #333;
+        }
+        
+        .refresh-btn {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            font-family: 'NotoSans Bold', 'Minecraft Five Bold', sans-serif;
+            font-weight: bold;
+            height: 40px;
+            width: 130px;
+            border: 2px solid #1E1E1F;
+            color: #FFFFFF;
+            padding-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+            text-shadow: 1px 1px 0 #000;
+            background-color: #3C8527;
+            box-shadow: inset 0 -4px #1D4D13, inset 3px 3px rgba(255, 255, 255, 0.2), inset -3px -7px rgba(255, 255, 255, 0.1);
+        }
+        
+        .refresh-btn:hover {
+            background-color: #2A641C;
+            box-shadow: inset 0 -4px #1D4D13, inset 3px 3px rgba(255, 255, 255, 0.4), inset -3px -7px rgba(255, 255, 255, 0.3);
+        }
+        
+        .refresh-btn:active {
+            background-color: #1D4D13;
+            box-shadow: inset 3px 3px rgba(255, 255, 255, 0.4), inset -3px -3px rgba(255, 255, 255, 0.3);
+            height: 36px;
+            margin-top: 10px;
+            padding-bottom: 2px;
+        }
+        
+        .changelog-container {
+            padding: 0;
+        }
+        
+        .changelog-header {
+            background-color: #252525;
+            border-bottom: 3px solid #3a3a3a;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: inset 0 0 0 1px #333;
+        }
+        
+        .changelog-header h2 {
+            color: #4aa0f5;
+            font-size: 20px;
+            font-family: 'Minecraft Ten', 'NotoSans Bold', sans-serif;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .update-count {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            padding: 4px 12px;
+            font-size: 14px;
+            font-family: 'Minecraft Five', 'NotoSans', sans-serif;
+            border: 2px solid;
+            border-top-color: #555;
+            border-left-color: #555;
+            border-right-color: #222;
+            border-bottom-color: #222;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .changelog-list {
+            padding: 8px;
+        }
+        
+        .update-item {
+            background-color: #222;
+            border: 2px solid;
+            border-top-color: #333;
+            border-left-color: #333;
+            border-right-color: #111;
+            border-bottom-color: #111;
+            margin-bottom: 8px;
+            padding: 0;
+            box-shadow: 1px 1px 0 #000;
+        }
+        
+        .update-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .update-header {
+            background: linear-gradient(to right, #2a2a2a 0%, #252525 100%);
+            border-bottom: 2px solid #3a3a3a;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .update-title {
+            color: #f5a142;
+            font-size: 18px;
+            font-family: 'Minecraft Five Bold', 'NotoSans Bold', sans-serif;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .update-date {
+            background-color: #3a3a3a;
+            color: #a0a0a0;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-family: 'Minecraft Five', 'NotoSans', sans-serif;
+            border: 2px solid;
+            border-top-color: #555;
+            border-left-color: #555;
+            border-right-color: #222;
+            border-bottom-color: #222;
+        }
+        
+        .update-content {
+            padding: 16px;
+            color: #ccc;
+            line-height: 1.5;
+            font-family: 'Minecraft Five', 'NotoSans', sans-serif;
+        }
+        
+        .update-tags {
+            padding: 0 16px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .update-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-family: 'Minecraft Five Bold', 'NotoSans Bold', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .tag-feature {
+            background: linear-gradient(to bottom, #3a7f3a 0%, #2a6f2a 100%);
+            border-top-color: #4a8f4a;
+            border-left-color: #4a8f4a;
+            border-right-color: #1a5f1a;
+            border-bottom-color: #1a5f1a;
+            color: #a0f5a0;
+        }
+        
+        .tag-fix {
+            background: linear-gradient(to bottom, #8f3a3a 0%, #7f2a2a 100%);
+            border-top-color: #9f4a4a;
+            border-left-color: #9f4a4a;
+            border-right-color: #6f1a1a;
+            border-bottom-color: #6f1a1a;
+            color: #f5a0a0;
+        }
+        
+        .tag-enhancement {
+            background: linear-gradient(to bottom, #3a5f8f 0%, #2a4f7f 100%);
+            border-top-color: #4a6f9f;
+            border-left-color: #4a6f9f;
+            border-right-color: #1a3f6f;
+            border-bottom-color: #1a3f6f;
+            color: #a0c0f5;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #777;
+            font-family: 'Minecraft Five', 'NotoSans', sans-serif;
+        }
+        
+        .ore-footer {
+            background-color: #2a2a2a;
+            border-top: 3px solid #3a3a3a;
+            padding: 16px 20px;
+            text-align: center;
+            color: #9a9a9a;
+            font-size: 13px;
+            font-family: 'Minecraft Five', 'NotoSans', sans-serif;
+        }
+        
+        .loading {
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .ore-loading {
+            display: inline-block;
+            width: 64px;
+            height: 64px;
+            image-rendering: pixelated;
+        }
+        
+        .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            font-family: 'Minecraft Five', 'NotoSans', sans-serif;
+        }
+        
+        .error-icon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .error-icon {
+            width: 96px;
+            height: 96px;
+            image-rendering: pixelated;
+        }
+        
+        .error-state h3 {
+            color: #f55a5a;
+            font-size: 20px;
+            font-family: 'Minecraft Five Bold', 'NotoSans Bold', sans-serif;
+            margin-bottom: 12px;
+        }
+        
+        .error-state p {
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .update-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .update-date {
+                align-self: flex-start;
+            }
+            
+            .ore-title {
+                font-size: 24px;
+            }
+            
+            .refresh-btn {
+                width: 100%;
+            }
+            
+            .error-icon {
+                width: 72px;
+                height: 72px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ore-container">
+        <div class="ore-header">
+            <h1 class="ore-title">IcePixel 更新日志</h1>
+            <p class="ore-subtitle">版本更新记录 • OreUI 风格</p>
+        </div>
+        
+        <div class="ore-controls">
+            <button class="refresh-btn" id="refreshBtn">刷新日志</button>
+        </div>
+        
+        <div class="changelog-container">
+            <div class="changelog-header">
+                <h2>更新历史</h2>
+                <div class="update-count">共 <span id="updateCount">0</span> 条更新</div>
+            </div>
+            
+            <div class="changelog-list" id="changelogList">
+                <div class="loading">
+                    <img src="https://raw.githubusercontent.com/Spectrollay/OreUI/refs/heads/main/images/Loading_white.gif" 
+                         alt="加载中" 
+                         class="ore-loading">
+                </div>
+            </div>
+        </div>
+        
+        <div class="ore-footer">
+            <p>更新日志自动从 update.txt 文件加载 • 最后更新时间: <span id="lastUpdated">-</span></p>
+        </div>
+    </div>
+
+    <!-- 音频元素（隐藏） -->
+    <audio id="clickSound" preload="auto">
+        <source src="sound/button.ogg" type="audio/ogg">
+        <source src="sound/button.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const changelogList = document.getElementById('changelogList');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const updateCount = document.getElementById('updateCount');
+            const lastUpdated = document.getElementById('lastUpdated');
+            const clickSound = document.getElementById('clickSound');
+            
+            // 预加载错误图标
+            const errorIconUrl = 'https://raw.githubusercontent.com/Spectrollay/OreUI/refs/heads/main/images/ErrorMessage.png';
+            const errorIcon = new Image();
+            errorIcon.src = errorIconUrl;
+            
+            loadChangelog();
+            
+            // 刷新按钮点击事件 - 添加声音播放
+            refreshBtn.addEventListener('click', function() {
+                // 播放点击声音
+                playClickSound();
+                
+                // 添加按钮点击效果
+                this.classList.add('ore-glow');
+                setTimeout(() => this.classList.remove('ore-glow'), 500);
+                
+                // 加载日志
+                loadChangelog();
+            });
+            
+            // 播放点击声音的函数
+            function playClickSound() {
+                try {
+                    if (clickSound && typeof clickSound.play === 'function') {
+                        // 重置音频到开始位置
+                        clickSound.currentTime = 0;
+                        // 播放音频
+                        clickSound.play().catch(error => {
+                            console.log('音频播放失败（用户可能未交互）:', error);
+                        });
+                    }
+                } catch (error) {
+                    console.log('音频播放出错:', error);
+                }
+            }
+            
+            async function loadChangelog() {
+                showLoading();
+                
+                try {
+                    const timestamp = new Date().getTime();
+                    const response = await fetch(`update.txt?t=${timestamp}`);
+                    
+                    if (!response.ok) throw new Error(`文件加载失败: ${response.status}`);
+                    
+                    const text = await response.text();
+                    if (!text || text.trim().length === 0) throw new Error('update.txt 文件为空');
+                    
+                    const updates = parseUpdateText(text);
+                    if (updates.length === 0) throw new Error('未能解析任何更新记录');
+                    
+                    displayUpdates(updates);
+                    
+                    const now = new Date();
+                    lastUpdated.textContent = formatDateTime(now);
+                    
+                } catch (error) {
+                    console.error('加载更新日志时出错:', error);
+                    showError(`无法加载更新日志文件: ${error.message}`);
+                    
+                    const now = new Date();
+                    lastUpdated.textContent = formatDateTime(now);
+                }
+            }
+            
+            function parseUpdateText(text) {
+                const updates = [];
+                const lines = text.trim().split('\n');
+                let currentUpdate = null;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const versionMatch = line.match(/^([^\s\-]+)\s*[-\u2013]\s*(.+)$/);
+                    
+                    if (versionMatch) {
+                        if (currentUpdate) updates.push(currentUpdate);
+                        
+                        const version = versionMatch[1].trim();
+                        const dateStr = versionMatch[2].trim();
+                        
+                        currentUpdate = {
+                            version: version,
+                            date: normalizeDate(dateStr),
+                            content: '',
+                            tags: []
+                        };
+                    } else if (currentUpdate && line) {
+                        const tagMatch = line.match(/^\[(\w+)\](.*)$/);
+                        if (tagMatch) {
+                            const tag = tagMatch[1];
+                            const content = tagMatch[2].trim();
+                            
+                            if (!currentUpdate.tags.includes(tag)) currentUpdate.tags.push(tag);
+                            if (content) currentUpdate.content += (currentUpdate.content ? '\n• ' : '• ') + content;
+                        } else {
+                            currentUpdate.content += (currentUpdate.content ? '\n• ' : '• ') + line;
+                            
+                            const lowerLine = line.toLowerCase();
+                            if ((lowerLine.includes('修复') || lowerLine.includes('fix') || lowerLine.includes('bug')) && 
+                                !currentUpdate.tags.includes('fix')) currentUpdate.tags.push('fix');
+                            if ((lowerLine.includes('优化') || lowerLine.includes('改进') || lowerLine.includes('enhancement')) && 
+                                !currentUpdate.tags.includes('enhancement')) currentUpdate.tags.push('enhancement');
+                            if ((lowerLine.includes('新增') || lowerLine.includes('添加') || lowerLine.includes('feature') || lowerLine.includes('功能')) && 
+                                !currentUpdate.tags.includes('feature')) currentUpdate.tags.push('feature');
+                        }
+                    }
+                }
+                
+                if (currentUpdate) updates.push(currentUpdate);
+                return updates;
+            }
+            
+            function normalizeDate(dateStr) {
+                try {
+                    let cleanDate = dateStr.replace(/\s+/g, '');
+                    const match = cleanDate.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+                    if (match) {
+                        const year = match[1];
+                        const month = match[2].padStart(2, '0');
+                        const day = match[3].padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
+                } catch (e) {
+                    console.error('日期格式化错误:', e);
+                }
+                return dateStr;
+            }
+            
+            function displayUpdates(updates) {
+                updateCount.textContent = updates.length;
+                
+                if (updates.length === 0) {
+                    changelogList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>暂无更新日志</h3>
+                            <p>没有找到更新记录</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                updates.forEach(update => {
+                    const tagsHtml = update.tags.map(tag => 
+                        `<span class="update-tag tag-${tag}">${getTagLabel(tag)}</span>`
+                    ).join('');
+                    
+                    let contentHtml = update.content || '暂无详细说明';
+                    contentHtml = contentHtml.replace(/\n/g, '<br>');
+                    
+                    html += `
+                        <div class="update-item">
+                            <div class="update-header">
+                                <div class="update-title">${update.version}</div>
+                                <div class="update-date">${formatDate(update.date)}</div>
+                            </div>
+                            <div class="update-content">${contentHtml}</div>
+                            ${tagsHtml ? `<div class="update-tags">${tagsHtml}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                changelogList.innerHTML = html;
+            }
+            
+            function showLoading() {
+                changelogList.innerHTML = `
+                    <div class="loading">
+                        <img src="https://raw.githubusercontent.com/Spectrollay/OreUI/refs/heads/main/images/Loading_white.gif" 
+                             alt="加载中" 
+                             class="ore-loading">
+                    </div>
+                `;
+            }
+            
+            function showError(message) {
+                changelogList.innerHTML = `
+                    <div class="error-state">
+                        <div class="error-icon-container">
+                            <img src="${errorIconUrl}" alt="错误" class="error-icon">
+                        </div>
+                        <h3>加载失败</h3>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+            
+            function getTagLabel(tag) {
+                const labels = {
+                    'feature': '新功能',
+                    'fix': '问题修复',
+                    'enhancement': '功能优化'
+                };
+                return labels[tag] || tag;
+            }
+            
+            function formatDate(dateString) {
+                if (!dateString || dateString === '未指定日期') return '未指定日期';
+                
+                try {
+                    const date = new Date(dateString);
+                    if (isNaN(date.getTime())) {
+                        const parts = dateString.split(/[-\/]/);
+                        if (parts.length === 3) {
+                            const year = parseInt(parts[0]);
+                            const month = parseInt(parts[1]) - 1;
+                            const day = parseInt(parts[2]);
+                            const dateObj = new Date(year, month, day);
+                            if (!isNaN(dateObj.getTime())) {
+                                return dateObj.toLocaleDateString('zh-CN', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                });
+                            }
+                        }
+                        return dateString;
+                    }
+                    
+                    return date.toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                } catch (e) {
+                    return dateString;
+                }
+            }
+            
+            function formatDateTime(date) {
+                return date.toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        });
+    </script>
+</body>
+</html>
             flex-direction: column;
             min-height: 100vh;
         }

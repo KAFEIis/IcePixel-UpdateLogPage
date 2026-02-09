@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IcePixel服务器更新日志</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --text-color: #333;
+            --light-bg: #f9f9f9;
+            --border-color: #eaeaea;
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--secondary-color);
+        }
+        
+        .filter-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .refresh-btn {
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background-color: #16a085;
+            transform: translateY(-2px);
+        }
+        
+        .changelog-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        .changelog-header {
+            padding: 25px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .changelog-header h2 {
+            font-weight: 400;
+            font-size: 1.5rem;
+        }
+        
+        .update-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .changelog-list {
+            padding: 10px;
+        }
+        
+        .update-item {
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        
+        .update-item:hover {
+            background-color: rgba(52, 152, 219, 0.03);
+        }
+        
+        .update-item:last-child {
+            border-bottom: none;
+        }
+        
+        .update-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .update-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .update-date {
+            background-color: #f0f7ff;
+            color: var(--secondary-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .update-content {
+            color: #555;
+            line-height: 1.7;
+        }
+        
+        .update-content ul, .update-content ol {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .update-content li {
+            margin-bottom: 8px;
+        }
+        
+        .update-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-top: 10px;
+        }
+        
+        .tag-feature {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #2980b9;
+        }
+        
+        .tag-fix {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+        }
+        
+        .tag-enhancement {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--secondary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .update-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .update-date {
+                align-self: flex-start;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 30px 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .changelog-header, .update-item {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>IcePixel服务器更新日志</h1>
+            <p class="subtitle">记录服务器的所有版本更新、功能添加和问题修复。</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="controls">
+                <div class="filter-options">
+                    <button class="filter-btn active" data-filter="all">全部更新</button>
+                    <button class="filter-btn" data-filter="feature">新功能</button>
+                    <button class="filter-btn" data-filter="fix">问题修复</button>
+                    <button class="filter-btn" data-filter="enhancement">功能优化</button>
+                </div>
+                
+                <button class="refresh-btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> 刷新日志
+                </button>
+            </div>
+            
+            <div class="changelog-container">
+                <div class="changelog-header">
+                    <h2>更新历史</h2>
+                    <div class="update-count">共 <span id="updateCount">0</span> 条更新</div>
+                </div>
+                
+                <div class="changelog-list" id="changelogList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>最后更新: <span id="lastUpdated">-</span></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const changelogList = document.getElementById('changelogList');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const updateCount = document.getElementById('updateCount');
+            const lastUpdated = document.getElementById('lastUpdated');
+            
+            let allUpdates = [];
+            let activeFilter = 'all';
+            
+            // 初始化
+            loadChangelog();
+            
+            // 设置过滤器按钮事件
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    activeFilter = this.getAttribute('data-filter');
+                    displayUpdates(allUpdates, activeFilter);
+                });
+            });
+            
+            // 刷新按钮事件
+            refreshBtn.addEventListener('click', loadChangelog);
+            
+            // 加载更新日志
+            async function loadChangelog() {
+                showLoading();
+                
+                try {
+                    // 添加时间戳防止缓存
+                    const timestamp = new Date().getTime();
+                    const response = await fetch(`update.txt?t=${timestamp}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`文件加载失败: ${response.status} ${response.statusText}`);
+                    }
+                    
+                    const text = await response.text();
+                    
+                    if (!text || text.trim().length === 0) {
+                        throw new Error('update.txt 文件为空');
+                    }
+                    
+                    console.log('获取到的update.txt内容:', text);
+                    
+                    // 直接解析您的update.txt格式
+                    allUpdates = parseYourFormat(text);
+                    
+                    if (allUpdates.length === 0) {
+                        throw new Error('未能解析任何更新记录');
+                    }
+                    
+                    // 显示所有更新
+                    displayUpdates(allUpdates, activeFilter);
+                    
+                    // 更新最后更新时间
+                    const now = new Date();
+                    lastUpdated.textContent = formatDate(now);
+                    
+                } catch (error) {
+                    console.error('加载更新日志时出错:', error);
+                    showError(`无法加载更新日志文件: ${error.message}<br><br>请确认 update.txt 文件是否存在，并且格式正确。`);
+                    
+                    // 只更新最后更新时间，不显示示例数据
+                    const now = new Date();
+                    lastUpdated.textContent = formatDate(now);
+                }
+            }
+            
+            // 专门解析您的格式：v26.2.1 - 2026-2-5
+            function parseYourFormat(text) {
+                const updates = [];
+                const lines = text.trim().split('\n');
+                let currentUpdate = null;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    // 检测版本行：如 "v26.2.1 - 2026-2-5"
+                    const versionMatch = line.match(/^([^\s\-]+)\s*[-\u2013]\s*(.+)$/);
+                    
+                    if (versionMatch) {
+                        // 如果有前一个更新，先保存
+                        if (currentUpdate) {
+                            updates.push(currentUpdate);
+                        }
+                        
+                        const version = versionMatch[1].trim();
+                        const dateStr = versionMatch[2].trim();
+                        
+                        currentUpdate = {
+                            version: version,
+                            date: normalizeDate(dateStr),
+                            content: '',
+                            tags: []
+                        };
+                        
+                        console.log('找到版本:', version, '日期:', dateStr);
+                    } else if (currentUpdate) {
+                        // 如果是内容行
+                        if (line) {
+                            // 检测标签，如 [fix] 或 [enhancement]
+                            const tagMatch = line.match(/^\[(\w+)\](.*)$/);
+                            if (tagMatch) {
+                                const tag = tagMatch[1];
+                                const content = tagMatch[2].trim();
+                                
+                                currentUpdate.tags.push(tag);
+                                if (content) {
+                                    currentUpdate.content += (currentUpdate.content ? '\n• ' : '• ') + content;
+                                }
+                            } else {
+                                // 没有标签的行
+                                currentUpdate.content += (currentUpdate.content ? '\n• ' : '• ') + line;
+                                
+                                // 根据内容推断标签
+                                const lowerLine = line.toLowerCase();
+                                if (lowerLine.includes('修复') || lowerLine.includes('fix') || lowerLine.includes('bug')) {
+                                    if (!currentUpdate.tags.includes('fix')) {
+                                        currentUpdate.tags.push('fix');
+                                    }
+                                }
+                                if (lowerLine.includes('优化') || lowerLine.includes('改进') || lowerLine.includes('enhancement')) {
+                                    if (!currentUpdate.tags.includes('enhancement')) {
+                                        currentUpdate.tags.push('enhancement');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // 添加最后一个更新
+                if (currentUpdate) {
+                    updates.push(currentUpdate);
+                }
+                
+                console.log('解析结果:', updates);
+                return updates;
+            }
+            
+            // 标准化日期格式：2026-2-5 -> 2026-02-05
+            function normalizeDate(dateStr) {
+                try {
+                    // 移除日期中的空格
+                    let cleanDate = dateStr.replace(/\s+/g, '');
+                    
+                    // 处理 2026-2-5 这种格式
+                    const match = cleanDate.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+                    if (match) {
+                        const year = match[1];
+                        const month = match[2].padStart(2, '0');
+                        const day = match[3].padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
+                } catch (e) {
+                    console.error('日期格式化错误:', e);
+                }
+                
+                // 如果无法处理，返回原始日期
+                return dateStr;
+            }
+            
+            // 显示更新
+            function displayUpdates(updates, filter) {
+                // 过滤更新
+                let filteredUpdates = updates;
+                if (filter !== 'all') {
+                    filteredUpdates = updates.filter(update => 
+                        update.tags.includes(filter)
+                    );
+                }
+                
+                // 更新计数
+                updateCount.textContent = filteredUpdates.length;
+                
+                // 如果没有更新
+                if (filteredUpdates.length === 0) {
+                    changelogList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h3>暂无更新日志</h3>
+                            <p>没有找到${filter === 'all' ? '' : '符合筛选条件的'}更新记录</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 生成HTML
+                let html = '';
+                filteredUpdates.forEach(update => {
+                    const tagsHtml = update.tags.map(tag => 
+                        `<span class="update-tag tag-${tag}">${getTagLabel(tag)}</span>`
+                    ).join('');
+                    
+                    // 处理内容
+                    let contentHtml = update.content || '暂无详细说明';
+                    
+                    // 将换行符转换为br标签
+                    contentHtml = contentHtml.replace(/\n/g, '<br>');
+                    
+                    html += `
+                        <div class="update-item">
+                            <div class="update-header">
+                                <div class="update-title">${update.version}</div>
+                                <div class="update-date">${formatDate(update.date)}</div>
+                            </div>
+                            <div class="update-content">${contentHtml}</div>
+                            ${tagsHtml ? `<div>${tagsHtml}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                changelogList.innerHTML = html;
+            }
+            
+            // 显示加载状态
+            function showLoading() {
+                changelogList.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                `;
+            }
+            
+            // 显示错误状态
+            function showError(message) {
+                changelogList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>加载失败</h3>
+                        <p>${message}</p>
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                            您的 update.txt 格式应该为：<br>
+                            <code>v1.0.0 - 2023-01-01<br>[feature] 新增功能描述<br>[fix] 修复问题描述</code>
+                        </p>
+                    </div>
+                `;
+            }
+            
+            // 获取标签的显示文本
+            function getTagLabel(tag) {
+                const labels = {
+                    'feature': '新功能',
+                    'fix': '问题修复',
+                    'enhancement': '功能优化'
+                };
+                return labels[tag] || tag;
+            }
+            
+            // 格式化日期显示：2026-02-05 -> 2026年2月5日
+            function formatDate(dateString) {
+                if (!dateString) return '未指定日期';
+                
+                try {
+                    // 处理标准日期格式
+                    const date = new Date(dateString);
+                    if (isNaN(date.getTime())) {
+                        // 尝试处理 2026-2-5 格式
+                        const parts = dateString.split(/[-\/]/);
+                        if (parts.length === 3) {
+                            const year = parseInt(parts[0]);
+                            const month = parseInt(parts[1]) - 1;
+                            const day = parseInt(parts[2]);
+                            const dateObj = new Date(year, month, day);
+                            if (!isNaN(dateObj.getTime())) {
+                                return dateObj.toLocaleDateString('zh-CN', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                });
+                            }
+                        }
+                        return dateString;
+                    }
+                    
+                    return date.toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                } catch (e) {
+                    return dateString;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

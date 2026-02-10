@@ -345,6 +345,68 @@
             color: #aaa;
             margin-bottom: 8px;
         }
+        /* 新增：页面顶部横幅图片 */
+.ore-banner {
+    width: 100%;
+    height: 200px;
+    background-color: #1a1a1a;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid #3a3a3a;
+}
+
+.banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, 
+        rgba(0, 0, 0, 0.7) 0%, 
+        rgba(0, 0, 0, 0.4) 50%, 
+        rgba(0, 0, 0, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-text {
+    color: white;
+    font-family: 'Minecraft Ten', 'NotoSans Bold', sans-serif;
+    font-size: 2.5rem;
+    text-shadow: 3px 3px 0 #000, 1px 1px 0 #000;
+    text-align: center;
+    padding: 0 20px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .ore-banner {
+        height: 150px;
+    }
+    
+    .banner-text {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ore-banner {
+        height: 120px;
+    }
+    
+    .banner-text {
+        font-size: 1.5rem;
+    }
+}
+
         
         @media (max-width: 768px) {
             .update-header {
@@ -372,11 +434,15 @@
     </style>
 </head>
 <body>
-    <div class="ore-container">
-        <div class="ore-header">
-            <h1 class="ore-title">IcePixel 更新日志</h1>
-            <p class="ore-subtitle">版本更新记录 • OreUI 风格</p>
-        </div>
+    <!-- 新增：顶部横幅 -->
+<div class="ore-banner">
+    <img src="https://raw.bgithub.xyz/Spectrollay/OreUI/refs/heads/main/images/Default.png" 
+         alt="IcePi Banner" 
+         class="banner-image">
+    <div class="banner-overlay">
+        <h1 class="banner-text">IcePixel 更新日志</h1>
+    </div>
+</div>
         
         <div class="ore-controls">
             <button class="refresh-btn" id="refreshBtn">刷新日志</button>
